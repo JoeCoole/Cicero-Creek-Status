@@ -1,0 +1,51 @@
+<div id="gageWidget" style="font-family:Arial, sans-serif; padding:1em; border-radius:10px; color:white; text-align:center;">
+  <h2 style="margin-bottom:0.5em;">🌊 Cicero Creek Status</h2>
+  <div id="gageStatus" style="font-size:1.2em;"></div>
+</div>
+
+<script>
+async function fetchGageHeight() {
+  const url = "https://waterservices.usgs.gov/nwis/iv/?format=json&sites=03349510&parameterCd=00065";
+  const response = await fetch(url);
+  const data = await response.json();
+  const height = parseFloat(data.value.timeSeries[0].values[0].value[0].value);
+
+  let status = "";
+  let bgColor = "";
+  let icon = "";
+
+  if (height < 9) {
+    status = "All bays are open.";
+    bgColor = "linear-gradient(135deg, #2ecc71, #27ae60)";
+    icon = "✅";
+  } else if (height >= 13) {
+    status = "The range and barn are completely flooded.";
+    bgColor = "linear-gradient(135deg, #8e44ad, #6c3483)";
+    icon = "🏚️";
+  } else if (height >= 11) {
+    status = "The range is completely flooded.";
+    bgColor = "linear-gradient(135deg, #e74c3c, #c0392b)";
+    icon = "🌧️";
+  } else if (height >= 10.5) {
+    status = "Bays 1, 2, 3, 4, 7, 8, 9, and 10 are flooded.";
+    bgColor = "linear-gradient(135deg, #f39c12, #d35400)";
+    icon = "🚧";
+  } else if (height >= 10) {
+    status = "Bays 1, 2, 7, 8, 9, and 10 are flooded.";
+    bgColor = "linear-gradient(135deg, #f1c40f, #f39c12)";
+    icon = "⚠️";
+  } else if (height >= 9) {
+    status = "Bays 1, 8, 9, and 10 are flooded.";
+    bgColor = "linear-gradient(135deg, #3498db, #2980b9)";
+    icon = "🌊";
+  }
+
+  const widget = document.getElementById("gageWidget");
+  widget.style.background = bgColor;
+
+  document.getElementById("gageStatus").innerText =
+    `${icon} Gage Height: ${height.toFixed(2)} ft — ${status}`;
+}
+
+fetchGageHeight();
+</script>
